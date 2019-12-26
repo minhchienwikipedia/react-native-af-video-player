@@ -89,7 +89,7 @@ class Video extends Component {
   onLoad(data) {
     if (!this.state.loading) return
     this.props.onLoad(data)
-    const { height, width } = data.naturalSize
+    const { height, width } = data.naturalSize   
     const ratio = height === 'undefined' && width === 'undefined' ?
       (9 / 16) : (height / width)
     const inlineHeight = this.props.lockRatio ?
@@ -168,7 +168,7 @@ class Video extends Component {
   }
 
   onError(msg) {
-    this.props.onError(msg)
+    this.props.onError(msg); return;
     const { error } = this.props
     this.setState({ renderError: true }, () => {
       let type
@@ -242,9 +242,9 @@ class Video extends Component {
           const initialOrient = Orientation.getInitialOrientation()
           const height = orientation !== initialOrient ?
             Win.width : Win.height
-          this.props.onFullScreen(this.state.fullScreen)
-          if (this.props.rotateToFullScreen) Orientation.lockToLandscape()
-          this.animToFullscreen(height)
+            this.props.onFullScreen(this.state.fullScreen)
+            if (this.props.rotateToFullScreen) Orientation.lockToLandscape()
+            this.animToFullscreen(height)
         } else {
           if (this.props.fullScreenOnly) {
             this.setState({ paused: true }, () => this.props.onPlay(!this.state.paused))
@@ -353,12 +353,12 @@ class Video extends Component {
       inlineOnly,
       playInBackground,
       playWhenInactive,
-      controlDuration,
-      hideFullScreenControl
+      disableControls,
+      disableAniHeight
     } = this.props
 
     const inline = {
-      height: inlineHeight,
+      height: disableAniHeight ? '100%' : inlineHeight,
       alignSelf: 'stretch'
     }
 
@@ -373,7 +373,7 @@ class Video extends Component {
           styles.background,
           fullScreen ?
             (styles.fullScreen, { height: this.animFullscreen })
-            : { height: this.animInline },
+            : { height: disableAniHeight ? '100%' : this.animInline },
           fullScreen ? null : style
         ]}
       >
@@ -403,6 +403,9 @@ class Video extends Component {
           // onBuffer={() => this.onBuffer()} // Callback when remote video is buffering
           onTimedMetadata={e => onTimedMetadata(e)} // Callback when the stream receive some metadata
         />
+        {
+          !disableControls &&
+        
         <Controls
           ref={(ref) => { this.controls = ref }}
           toggleMute={() => this.toggleMute()}
@@ -423,9 +426,8 @@ class Video extends Component {
           onMorePress={() => onMorePress()}
           theme={setTheme}
           inlineOnly={inlineOnly}
-          controlDuration={controlDuration}
-          hideFullScreenControl={hideFullScreenControl}
         />
+        }
       </Animated.View>
     )
   }
@@ -456,7 +458,6 @@ Video.propTypes = {
   loop: PropTypes.bool,
   autoPlay: PropTypes.bool,
   inlineOnly: PropTypes.bool,
-  hideFullScreenControl: PropTypes.bool,
   fullScreenOnly: PropTypes.bool,
   playInBackground: PropTypes.bool,
   playWhenInactive: PropTypes.bool,
@@ -477,7 +478,8 @@ Video.propTypes = {
   title: PropTypes.string,
   theme: PropTypes.object,
   resizeMode: PropTypes.string,
-  controlDuration: PropTypes.number,
+  disableControls: PropTypes.bool,
+  disableAniHeight: PropTypes.bool,
 }
 
 Video.defaultProps = {
@@ -492,6 +494,8 @@ Video.defaultProps = {
   playWhenInactive: false,
   rotateToFullScreen: false,
   lockPortraitOnFsExit: false,
+  disableControls: false,
+  disableAniHeight: false,
   onEnd: () => {},
   onLoad: () => {},
   onPlay: () => {},
@@ -506,8 +510,7 @@ Video.defaultProps = {
   logo: undefined,
   title: '',
   theme: defaultTheme,
-  resizeMode: 'contain',
-  controlDuration: 3,
+  resizeMode: 'contain'
 }
 
 export default Video
