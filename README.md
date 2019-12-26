@@ -99,6 +99,8 @@ onPlay                | function | No       | (playing) => {}           | Return
 error                 | boolean, object | No | true                     | Pass in an object to Alert. See https://facebook.github.io/react-native/docs/alert.html
 theme                 | object   | No       | all white                 | Pass in an object to theme. (See example below to see the full list of available settings)
 controlDuration             | number   | No       | 3                 | Set the visibility time of the pause button and the progress bar after the video was started
+disableControls             | bool   | No       | false                 | Show hide controls
+disableAniHeight             | bool   | No       | false                 | Enable or disable default animation height
 
 ## Referencing
 
